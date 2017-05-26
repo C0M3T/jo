@@ -43,13 +43,13 @@ def main():
     num_rob = len(crimes)
     sor_crimes = sort_crimes(crimes)
     up_crimes = update_crimes(sor_crimes, times)
-    print(len(up_crimes)) # Why only 17 crimes remaining!!!
+    print(len(up_crimes), "crimes that got matched with a time sucess") # Why only 17 crimes remaining!!!
     day = find_day(up_crimes)
     month = find_month(up_crimes)
     hour = find_hour(up_crimes)
     crime_output(num_rob, day, month, hour)
 
-    print(len(sor_crimes))
+    print(len(sor_crimes), "number of crimes that are rob")
     for i in range(len(sor_crimes) - 1):
         if sor_crimes[i].id  >= sor_crimes[i + 1].id:
             print(i)
@@ -120,8 +120,21 @@ def update_crimes(crimes, lines):
             checks += 1
             tbu = [day, num_month, num_hour]
             crime_obj.set_time(day, num_month, num_hour)
-            up_crimes.append(crime_obj)
-    print(checks)
+
+#------------------------------------------------------------------
+            repeat = False
+            if len(up_crimes) == 0:     #if the list is empty then it adds the crime object
+                up_crimes.append(crime_obj)
+            else:                       #otherwise it checks it against duplicate times
+                for i in range(0,len(up_crimes)):
+                    if up_crimes[i].id == crime_obj.id:
+                        repeat = True
+
+                if repeat == False:
+                    up_crimes.append(crime_obj)
+#----------------------------------------------------------------
+
+    print(checks, "number of crime time id that match crime id")
     return up_crimes
              
 
@@ -137,25 +150,34 @@ def lin_search(crimes, crime_id):
     index = lst_ids.index(crime_id)
     return crimes[index]    
 
+
+#------------------------------------------------------------------------------------------
+#CrimeList integer -> Crime
+#funtion returns the crime object if the id matches
 def find_crime(crimes, crime_id):
     crime_id = int(crime_id)
-#    min_rob = crimes[0].id
-#    max_rob = crimes[-1].id
-#    if crime_id < min_rob or crime_id > max_rob:
-#        return None
+    min_rob = crimes[0].id
+    max_rob = crimes[-1].id
+
+#sorts out ids that are out of range of the crime list
+    if crime_id < min_rob or crime_id > max_rob:
+        return None
+
+#these are index values for crime list
     low = 0
     high = (len(crimes) - 1)
-    while True:
+    while True:  #will return None or crime object
         mid = ((low + high) // 2)
         value = crimes[mid].id
         if value == crime_id:
             return crimes[mid]
-        elif (high - low) <= 0:
+        elif (high - low) <= 0:  #???
             return None
         elif value < crime_id:
             low = mid + 1
-        high = mid - 1
-
+        else:                   #needed an else otherwise after the last elif runs this line will also run
+            high = mid - 1
+#-------------------------------------------------------------------------------------------
 
 def crime_output(num_rob, freq_day, freq_mon, freq_hour):
     cat = "ROBBERIES:"
